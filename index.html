@@ -361,15 +361,17 @@ function showLetter(x){
     lt.classList.add('open');$('#hint').textContent='';
     setTimeout(()=>{$('#lp').hidden=false;lt.classList.add('read')},1300);
   };
-  $('#pcl').onclick=()=>{lt.hidden=true;try{localStorage.setItem('seenLetter',x.id)}catch(e){}};
+  $('#pcl').onclick=()=>{lt.hidden=true};
 }
 function listenLetters(){
+  let last=null,ready=false;
   onSnapshot(query(collection(db,'announcements'),orderBy('createdAt','desc'),limit(1)),s=>{
-    const d=s.docs[0];if(!d)return;
+    const d=s.docs[0];
+    if(!ready){if(s.metadata.fromCache)return;ready=true;last=d?d.id:null;return}
+    if(!d||d.id===last)return;
     const x={id:d.id,...d.data()};
-    if(!x.createdAt||Date.now()/1000-x.createdAt.seconds>7*86400)return;
-    let seen='';try{seen=localStorage.getItem('seenLetter')||''}catch(e){}
-    if(seen!==x.id)showLetter(x);
+    if(!x.createdAt)return;
+    last=d.id;showLetter(x);
   },()=>{});
 }
 
