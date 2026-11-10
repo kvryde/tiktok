@@ -50,6 +50,23 @@ nav .plus{width:46px;height:32px;border-radius:10px;border:0;background:linear-g
 .c{padding:8px 0;border-bottom:1px solid #ffffff14;font-size:14px;overflow-wrap:anywhere}
 .c b{color:var(--rose)}
 .msg{color:#ffb3c4;font-size:13px;min-height:18px;margin-bottom:6px}
+#inbox,#chat{position:absolute;inset:0 0 58px 0;background:var(--bg);z-index:22;overflow-y:auto;padding-top:46px}
+#chat{inset:0;z-index:35;display:flex;flex-direction:column;padding-top:44px;overflow:hidden}
+#inbox[hidden],#chat[hidden]{display:none}
+.mh{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #ffffff14}
+.mh h2{flex:1}
+.bk{background:none;border:0;font-size:30px;line-height:1}
+.ch{display:flex;gap:12px;align-items:center;padding:12px 14px;cursor:pointer}
+.ch p{font-size:13px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px}
+#ml{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:6px}
+.b{max-width:76%;padding:9px 12px;border-radius:16px;overflow-wrap:anywhere;font-size:14px}
+.b.me{align-self:flex-end;background:var(--rose)}
+.b.th{align-self:flex-start;background:#2c2227}
+.b img,.b video{width:100%;border-radius:10px;display:block;max-height:320px;object-fit:cover}
+.b small{display:block;margin-top:4px;opacity:.85}
+.mi{display:flex;gap:8px;padding:10px;border-top:1px solid #ffffff14;align-items:center;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+.mi #ct{flex:1;min-width:0;background:#2c2227;border:1px solid #4a3a42;border-radius:20px;padding:10px 14px}
+.mi #cp{background:none;border:0;font-size:24px}
 @media(max-width:480px){.phone{width:100vw;height:100dvh;max-height:none;border:0;border-radius:0}.notch{display:none}.top{padding-top:calc(env(safe-area-inset-top,0px) + 16px)}nav{height:calc(58px + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px)}#feed,#prof{bottom:calc(58px + env(safe-area-inset-bottom,0px))}}
 </style></head>
 <body>
@@ -58,15 +75,16 @@ nav .plus{width:46px;height:32px;border-radius:10px;border:0;background:linear-g
  <div class="top"><button data-t="fy" class="on">For You</button><button data-t="new">Latest</button></div>
  <div id="feed"></div>
  <div id="prof" hidden></div>
- <nav><button data-n="home" class="on"><i>⌂</i>Home</button><button class="plus" data-n="add">+</button><button data-n="me"><i>☺</i>Profile</button></nav>
+ <nav><button data-n="home" class="on"><i>⌂</i>Home</button><button class="plus" data-n="add">+</button><button data-n="inbox"><i>✉</i>Inbox</button><button data-n="me"><i>☺</i>Profile</button></nav>
+ <div id="inbox" hidden></div>
+ <div id="chat" hidden></div>
  <div id="sheet" class="sheet" hidden><div class="panel" id="panel"></div></div>
 </div></div>
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import{getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import{getFirestore,collection,doc,getDoc,getDocs,setDoc,addDoc,query,orderBy,limit,where,increment,serverTimestamp,writeBatch}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-import{getStorage,ref,uploadBytesResumable,getDownloadURL}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+import{getFirestore,collection,doc,getDoc,getDocs,setDoc,addDoc,query,orderBy,limit,where,increment,serverTimestamp,writeBatch,onSnapshot}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 /* ====== Firebase config (tiktok-for-her) ====== */
 const firebaseConfig={
@@ -79,7 +97,7 @@ const firebaseConfig={
 };
 /* ======================================================================== */
 
-const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),store=getStorage(app);
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const NICE={'auth/email-already-in-use':'That name is taken. Try another.','auth/invalid-credential':'Wrong name or password.','auth/user-not-found':'Wrong name or password.','auth/wrong-password':'Wrong name or password.','auth/weak-password':'Password needs 6+ characters.','auth/too-many-requests':'Too many tries. Wait a bit and try again.'};
@@ -134,12 +152,7 @@ $('#feed').addEventListener('click',async e=>{
   const id=sec.dataset.id,a=e.target.closest('[data-a]')?.dataset.a;
   if(a==='like')return like(id,sec);
   if(a==='cm')return comments(id,sec);
-  if(a==='sh'){
-    const v=vids.find(x=>x.id===id);
-    if(navigator.share)navigator.share({title:'Watch this',url:v.url}).catch(()=>{});
-    else{await navigator.clipboard.writeText(v.url);e.target.closest('button').querySelector('b').textContent='Copied'}
-    return;
-  }
+  if(a==='sh')return shareSheet(vids.find(x=>x.id===id));
   const vd=sec.querySelector('video');
   if(muted){muted=false;document.querySelectorAll('video').forEach(x=>x.muted=false);return}
   vd.paused?vd.play():vd.pause();
@@ -200,24 +213,16 @@ function authSheet(){
 function uploadSheet(){
   if(!me)return authSheet();
   sheet(`<h3>Post a video</h3><div class="msg" id="um"></div>
-  <input id="uf" type="file" accept="video/*"><textarea id="uc" rows="2" maxlength="300" placeholder="Write a caption"></textarea>
+  <input id="uf" type="url" placeholder="Paste a direct video link (.mp4)" autocapitalize="none"><textarea id="uc" rows="2" maxlength="300" placeholder="Write a caption"></textarea>
   <button class="btn" id="ub" style="width:100%">Post video</button>`);
-  $('#ub').onclick=()=>{
-    const f=$('#uf').files[0],m=t=>$('#um').textContent=t;
-    if(!f)return m('Choose a video file first.');
-    if(f.size>50*1024*1024)return m('Video is over 50 MB. Compress it first.');
+  $('#ub').onclick=async()=>{
+    const url=$('#uf').value.trim(),m=t=>$('#um').textContent=t;
+    if(!/^https:\/\/.+/i.test(url))return m('Paste a link that starts with https://');
     $('#ub').disabled=true;
-    const path=`videos/${me.uid}/${Date.now()}.${(f.name.split('.').pop()||'mp4').toLowerCase()}`;
-    const task=uploadBytesResumable(ref(store,path),f,{contentType:f.type});
-    task.on('state_changed',s=>m(`Uploading… ${Math.round(s.bytesTransferred/s.totalBytes*100)}%`),
-      e=>{$('#ub').disabled=false;m(nice(e))},
-      async()=>{
-        try{
-          const url=await getDownloadURL(task.snapshot.ref);
-          await addDoc(collection(db,'videos'),{uid:me.uid,username:me.username,isAdmin:me.isAdmin,url,caption:$('#uc').value.trim(),likeCount:0,commentCount:0,createdAt:serverTimestamp()});
-          $('#sheet').hidden=true;go('home');
-        }catch(e){$('#ub').disabled=false;m(nice(e))}
-      });
+    try{
+      await addDoc(collection(db,'videos'),{uid:me.uid,username:me.username,isAdmin:me.isAdmin,url,caption:$('#uc').value.trim(),likeCount:0,commentCount:0,createdAt:serverTimestamp()});
+      $('#sheet').hidden=true;go('home');
+    }catch(e){$('#ub').disabled=false;m(nice(e))}
   };
 }
 
@@ -231,12 +236,83 @@ async function profile(){
   $('#pg').innerHTML=mine.map(v=>`<video src="${esc(v.url)}#t=0.1" preload="metadata" muted playsinline></video>`).join('');
 }
 
+/* ===== Messages ===== */
+const cid=(a,b)=>[a,b].sort().join('_');
+let unsubI=null,unsubC=null;
+async function ensureChat(o){const id=cid(me.uid,o.uid);await setDoc(doc(db,'chats',id),{members:[me.uid,o.uid],names:{[me.uid]:me.username,[o.uid]:o.username}},{merge:true});return id}
+async function sendMsg(id,d){
+  await addDoc(collection(db,'chats',id,'messages'),{from:me.uid,...d,createdAt:serverTimestamp()});
+  await setDoc(doc(db,'chats',id),{last:d.type==='image'?'📷 Photo':d.type==='video'?'🎬 Video':d.text,lastAt:serverTimestamp()},{merge:true});
+}
+async function pickUser(cb){
+  if(!me)return authSheet();
+  sheet('<h3>Send to…</h3><input id="pf" placeholder="Search names"><div id="pl2">Loading…</div>');
+  const s=await getDocs(query(collection(db,'users'),limit(100)));
+  const us=s.docs.filter(d=>d.id!==me.uid).map(d=>({uid:d.id,username:d.data().username||'user'}));
+  const draw=()=>{
+    const q=$('#pf').value.toLowerCase(),l=us.filter(u=>u.username.toLowerCase().includes(q));
+    $('#pl2').innerHTML=l.length?l.map((u,i)=>`<div class="ch" data-i="${i}"><div class="av">${esc(u.username[0]).toUpperCase()}</div><b>@${esc(u.username)}</b></div>`).join(''):'<div class="c">No one found.</div>';
+    $('#pl2').querySelectorAll('.ch').forEach(e=>e.onclick=()=>cb(l[+e.dataset.i]));
+  };
+  $('#pf').oninput=draw;draw();
+}
+function shareSheet(v){
+  sheet('<h3>Share</h3><button class="btn" id="s1" style="width:100%;margin-bottom:8px">Send in a message</button><button class="btn alt" id="s2" style="width:100%">Copy link</button>');
+  $('#s1').onclick=()=>pickUser(async o=>{
+    const id=await ensureChat(o);
+    await sendMsg(id,{type:'video',url:v.url,text:v.caption||'',by:v.username});
+    sheet(`<h3>Sent to @${esc(o.username)}</h3><button class="btn" id="oc" style="width:100%">Open chat</button>`);
+    $('#oc').onclick=()=>{go('inbox');openChat(o)};
+  });
+  $('#s2').onclick=async()=>{
+    if(navigator.share){navigator.share({title:'Watch this',url:v.url}).catch(()=>{})}
+    else await navigator.clipboard.writeText(v.url);
+    $('#sheet').hidden=true;
+  };
+}
+function showInbox(){
+  if(!me){go('home');return authSheet()}
+  const ib=$('#inbox');ib.hidden=false;
+  ib.innerHTML='<div class="mh"><h2>Messages</h2><button class="btn" id="nm">New</button></div><div id="cl2"></div>';
+  $('#nm').onclick=()=>pickUser(openChat);
+  unsubI&&unsubI();
+  unsubI=onSnapshot(query(collection(db,'chats'),where('members','array-contains',me.uid)),s=>{
+    const rows=s.docs.map(d=>({id:d.id,...d.data()})).filter(r=>r.last).sort((a,b)=>(b.lastAt?.seconds||0)-(a.lastAt?.seconds||0));
+    $('#cl2').innerHTML=rows.length?rows.map(r=>{const ou=r.members.find(x=>x!==me.uid),n=r.names?.[ou]||'user';
+      return `<div class="ch" data-u="${esc(ou)}" data-un="${esc(n)}"><div class="av">${esc(n[0]).toUpperCase()}</div><div><b>@${esc(n)}</b><p>${esc(r.last)}</p></div></div>`}).join('')
+      :'<div class="empty" style="height:60%">No chats yet.<br>Tap New to message someone.</div>';
+    $('#cl2').querySelectorAll('.ch').forEach(e=>e.onclick=()=>openChat({uid:e.dataset.u,username:e.dataset.un}));
+  });
+}
+const bubble=m=>{
+  let b;
+  if(m.type==='image')b=`<img src="${esc(m.url)}" loading="lazy">`;
+  else if(m.type==='video')b=`<video src="${esc(m.url)}" controls playsinline preload="metadata"></video>${m.by?`<small>@${esc(m.by)}</small>`:''}${m.text?`<div>${esc(m.text)}</div>`:''}`;
+  else b=esc(m.text);
+  return `<div class="b ${m.from===me.uid?'me':'th'}">${b}</div>`;
+};
+async function openChat(o){
+  $('#sheet').hidden=true;
+  const id=await ensureChat(o),c=$('#chat');c.hidden=false;
+  c.innerHTML=`<div class="mh"><button class="bk" id="cb">‹</button><div class="av" style="width:34px;height:34px">${esc(o.username[0]).toUpperCase()}</div><b>@${esc(o.username)}</b></div><div id="ml"></div><div class="mi"><input id="ct" placeholder="Message" maxlength="500"><button class="btn" id="cs2">Send</button></div>`;
+  unsubC&&unsubC();
+  unsubC=onSnapshot(query(collection(db,'chats',id,'messages'),orderBy('createdAt'),limit(200)),s=>{
+    $('#ml').innerHTML=s.docs.map(d=>bubble(d.data())).join('');$('#ml').scrollTop=1e9;
+  });
+  $('#cb').onclick=()=>{unsubC&&unsubC();unsubC=null;c.hidden=true;c.innerHTML=''};
+  const send=async()=>{const t=$('#ct').value.trim();if(!t)return;$('#ct').value='';await sendMsg(id,{type:'text',text:t})};
+  $('#cs2').onclick=send;$('#ct').onkeydown=e=>{if(e.key==='Enter')send()};
+}
+
 function go(n){
   document.querySelectorAll('nav [data-n]').forEach(b=>b.classList.toggle('on',b.dataset.n===n));
-  $('#prof').hidden=n!=='me';$('#feed').style.visibility=n==='me'?'hidden':'visible';
-  document.querySelector('.top').style.display=n==='me'?'none':'flex';
-  if(n==='me'){document.querySelectorAll('video').forEach(v=>v.pause());profile()}
-  else loadFeed();
+  const off=n==='me'||n==='inbox';
+  $('#prof').hidden=n!=='me';$('#inbox').hidden=n!=='inbox';$('#chat').hidden=true;$('#feed').style.visibility=off?'hidden':'visible';
+  document.querySelector('.top').style.display=off?'none':'flex';
+  if(n!=='inbox'&&unsubI){unsubI();unsubI=null}
+  if(unsubC){unsubC();unsubC=null}
+  if(off)document.querySelectorAll('video').forEach(v=>v.pause());
+  if(n==='me')profile();else if(n==='inbox')showInbox();else loadFeed();
 }
 document.querySelectorAll('nav [data-n]').forEach(b=>b.onclick=()=>b.dataset.n==='add'?uploadSheet():go(b.dataset.n));
 document.querySelectorAll('.top [data-t]').forEach(b=>b.onclick=()=>{
