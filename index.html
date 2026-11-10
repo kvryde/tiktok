@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Our Reels</title>
+<meta name="theme-color" content="#000000">
+<style>
+:root{--bg:#0d0a0c;--ink:#fff;--dim:#ffffffb3;--rose:#ff3b6b;--pane:#1b1418}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:radial-gradient(circle at 50% 30%,#3a1325,#0a0608 70%);display:grid;place-items:center;font-family:"Trebuchet MS","Segoe UI",sans-serif;color:var(--ink)}
+button,input,textarea{font:inherit;color:inherit}
+.phone{width:390px;height:800px;max-height:96vh;background:#000;border-radius:48px;border:10px solid #1c1c1f;box-shadow:0 0 0 2px #444,0 30px 80px #000;position:relative;overflow:hidden}
+.notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:110px;height:26px;background:#000;border-radius:20px;z-index:30}
+.screen{position:absolute;inset:0;background:var(--bg);overflow:hidden}
+.top{position:absolute;top:0;left:0;right:0;z-index:20;display:flex;justify-content:center;gap:22px;padding:42px 0 10px;background:linear-gradient(#000a,transparent)}
+.top button{background:none;border:0;font-weight:700;font-size:16px;color:var(--dim);padding:4px 2px;border-bottom:2px solid transparent}
+.top button.on{color:#fff;border-color:#fff}
+#feed{position:absolute;inset:0 0 58px 0;overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none}
+#feed::-webkit-scrollbar{display:none}
+.v{height:100%;scroll-snap-align:start;scroll-snap-stop:always;position:relative;background:#000}
+.v video{width:100%;height:100%;object-fit:cover;display:block}
+.rail{position:absolute;right:8px;bottom:90px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.rail button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:2px;text-shadow:0 1px 4px #000}
+.rail i{font-style:normal;font-size:30px;line-height:1}
+.rail b{font-size:12px}
+.rail .liked i{color:var(--rose)}
+.av{width:44px;height:44px;border-radius:50%;background:var(--rose);display:grid;place-items:center;font-weight:700;border:2px solid #fff}
+.cap{position:absolute;left:12px;right:76px;bottom:76px;text-shadow:0 1px 4px #000}
+.cap p{font-size:14px;margin-top:4px;overflow-wrap:anywhere}
+.ck{color:var(--rose)}
+.empty{height:100%;display:grid;place-items:center;text-align:center;padding:30px;color:var(--dim)}
+nav{position:absolute;left:0;right:0;bottom:0;height:58px;background:#000;display:flex;align-items:center;justify-content:space-around;z-index:20;padding-bottom:4px}
+nav button{background:none;border:0;font-size:12px;color:var(--dim);display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button i{font-style:normal;font-size:22px}
+nav button.on{color:#fff}
+nav .plus{width:46px;height:32px;border-radius:10px;border:0;background:linear-gradient(90deg,#25f4ee 0 12%,var(--rose) 88%);color:#fff;font-size:24px;font-weight:700;display:grid;place-items:center}
+#prof{position:absolute;inset:0 0 58px 0;overflow-y:auto;padding:60px 14px 14px;text-align:center}
+#prof h2{margin:8px 0 14px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-top:14px}
+.grid video{width:100%;aspect-ratio:3/4;object-fit:cover;background:#222}
+.btn{background:var(--rose);border:0;border-radius:10px;padding:11px 18px;font-weight:700;cursor:pointer}
+.btn.alt{background:#2c2227}
+.btn:disabled{opacity:.5}
+.sheet{position:absolute;inset:0;z-index:40;background:#0009;display:flex;align-items:flex-end}
+.sheet[hidden],#prof[hidden]{display:none}
+.panel{background:var(--pane);width:100%;max-height:78%;overflow-y:auto;border-radius:22px 22px 0 0;padding:18px 16px 22px}
+.panel h3{margin-bottom:12px}
+.panel input,.panel textarea{width:100%;background:#2c2227;border:1px solid #4a3a42;border-radius:10px;padding:11px;margin-bottom:10px}
+.row{display:flex;gap:8px}
+.c{padding:8px 0;border-bottom:1px solid #ffffff14;font-size:14px;overflow-wrap:anywhere}
+.c b{color:var(--rose)}
+.msg{color:#ffb3c4;font-size:13px;min-height:18px;margin-bottom:6px}
+@media(max-width:480px){.phone{width:100vw;height:100dvh;max-height:none;border:0;border-radius:0}.notch{display:none}.top{padding-top:calc(env(safe-area-inset-top,0px) + 16px)}nav{height:calc(58px + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px)}#feed,#prof{bottom:calc(58px + env(safe-area-inset-bottom,0px))}}
+</style></head>
+<body>
+<div class="phone"><div class="notch"></div>
+<div class="screen">
+ <div class="top"><button data-t="fy" class="on">For You</button><button data-t="new">Latest</button></div>
+ <div id="feed"></div>
+ <div id="prof" hidden></div>
+ <nav><button data-n="home" class="on"><i>⌂</i>Home</button><button class="plus" data-n="add">+</button><button data-n="me"><i>☺</i>Profile</button></nav>
+ <div id="sheet" class="sheet" hidden><div class="panel" id="panel"></div></div>
+</div></div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import{getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import{getFirestore,collection,doc,getDoc,getDocs,setDoc,addDoc,query,orderBy,limit,where,increment,serverTimestamp,writeBatch}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import{getStorage,ref,uploadBytesResumable,getDownloadURL}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+
+/* ====== PASTE YOUR FIREBASE CONFIG HERE (replace this whole block) ====== */
+const firebaseConfig={
+  apiKey:"YOUR_API_KEY",
+  authDomain:"YOUR_PROJECT.firebaseapp.com",
+  projectId:"YOUR_PROJECT_ID",
+  storageBucket:"YOUR_PROJECT.firebasestorage.app",
+  messagingSenderId:"YOUR_SENDER_ID",
+  appId:"YOUR_APP_ID"
+};
+/* ======================================================================== */
+
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),store=getStorage(app);
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const NICE={'auth/email-already-in-use':'That name is taken. Try another.','auth/invalid-credential':'Wrong name or password.','auth/user-not-found':'Wrong name or password.','auth/wrong-password':'Wrong name or password.','auth/weak-password':'Password needs 6+ characters.','auth/too-many-requests':'Too many tries. Wait a bit and try again.'};
+const nice=e=>NICE[e.code]||(e.code||e.message||'Something went wrong').replace('auth/','').replace(/-/g,' ');
+const nameOk=n=>/^[A-Za-z0-9_]{3,20}$/.test(n);
+const mail=n=>n.toLowerCase()+'@reels.local';
+let me=null,myLikes=new Set(),tab='fy',vids=[],muted=true,busy=false;
+
+const io=new IntersectionObserver(es=>es.forEach(e=>{
+  const v=e.target.querySelector('video');
+  if(e.intersectionRatio>.6){v.muted=muted;v.play().catch(()=>{})}else{v.pause();v.currentTime=0}
+}),{threshold:[0,.6,1],root:$('#feed')});
+
+async function loadMe(u){
+  me=null;myLikes=new Set();
+  if(!u)return;
+  const s=await getDoc(doc(db,'users',u.uid));
+  const d=s.exists()?s.data():{};
+  me={uid:u.uid,username:d.username||'me',isAdmin:!!d.isAdmin};
+  const l=await getDocs(collection(db,'users',u.uid,'likes'));
+  l.forEach(x=>myLikes.add(x.id));
+}
+async function refresh(){await loadMe(auth.currentUser);loadFeed();if(!$('#prof').hidden)profile()}
+
+async function loadFeed(){
+  try{
+    const s=await getDocs(query(collection(db,'videos'),orderBy('createdAt','desc'),limit(60)));
+    vids=s.docs.map(d=>({id:d.id,...d.data()}));
+  }catch(e){$('#feed').innerHTML=`<div class="empty">Could not load videos.<br>${esc(nice(e))}</div>`;return}
+  if(tab==='fy')vids=[...vids.filter(v=>v.isAdmin),...vids.filter(v=>!v.isAdmin)];
+  renderFeed();
+}
+
+function card(v){
+  const u=v.username||'user';
+  return `<section class="v" data-id="${esc(v.id)}"><video src="${esc(v.url)}" loop playsinline muted preload="metadata"></video>
+  <div class="rail"><div class="av">${esc(u[0]).toUpperCase()}</div>
+  <button class="${myLikes.has(v.id)?'liked':''}" data-a="like"><i>♥</i><b>${v.likeCount||0}</b></button>
+  <button data-a="cm"><i>💬</i><b>${v.commentCount||0}</b></button>
+  <button data-a="sh"><i>➤</i><b>Share</b></button></div>
+  <div class="cap"><strong>@${esc(u)}${v.isAdmin?' <span class="ck">♥</span>':''}</strong><p>${esc(v.caption)}</p></div></section>`;
+}
+function renderFeed(){
+  const f=$('#feed');
+  f.innerHTML=vids.length?vids.map(card).join(''):'<div class="empty">No videos yet.<br>Tap + to post the first one.</div>';
+  f.querySelectorAll('.v').forEach(s=>io.observe(s));
+  f.scrollTop=0;
+}
+
+$('#feed').addEventListener('click',async e=>{
+  const sec=e.target.closest('.v');if(!sec)return;
+  const id=sec.dataset.id,a=e.target.closest('[data-a]')?.dataset.a;
+  if(a==='like')return like(id,sec);
+  if(a==='cm')return comments(id,sec);
+  if(a==='sh'){
+    const v=vids.find(x=>x.id===id);
+    if(navigator.share)navigator.share({title:'Watch this',url:v.url}).catch(()=>{});
+    else{await navigator.clipboard.writeText(v.url);e.target.closest('button').querySelector('b').textContent='Copied'}
+    return;
+  }
+  const vd=sec.querySelector('video');
+  if(muted){muted=false;document.querySelectorAll('video').forEach(x=>x.muted=false);return}
+  vd.paused?vd.play():vd.pause();
+});
+
+async function like(id,sec){
+  if(!me)return authSheet();
+  const v=vids.find(x=>x.id===id),has=myLikes.has(id),lr=doc(db,'users',me.uid,'likes',id),vr=doc(db,'videos',id),b=writeBatch(db);
+  if(has){b.delete(lr);b.update(vr,{likeCount:increment(-1)});myLikes.delete(id);v.likeCount=Math.max(0,(v.likeCount||0)-1)}
+  else{b.set(lr,{at:serverTimestamp()});b.update(vr,{likeCount:increment(1)});myLikes.add(id);v.likeCount=(v.likeCount||0)+1}
+  const btn=sec.querySelector('[data-a=like]');btn.classList.toggle('liked',!has);btn.querySelector('b').textContent=v.likeCount;
+  try{await b.commit()}catch(e){console.error(e)}
+}
+
+function sheet(html){$('#panel').innerHTML=html;$('#sheet').hidden=false}
+$('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')$('#sheet').hidden=true});
+
+async function comments(id,sec){
+  sheet('<h3>Comments</h3><div id="cl">Loading…</div>');
+  const s=await getDocs(query(collection(db,'videos',id,'comments'),orderBy('createdAt')));
+  const list=s.docs.map(d=>d.data());
+  $('#cl').innerHTML=(list.length?list.map(c=>`<div class="c"><b>@${esc(c.username)}</b> ${esc(c.body)}</div>`).join(''):'<div class="c">No comments yet.</div>')
+   +`<div class="row" style="margin-top:12px"><input id="ci" placeholder="Add a comment" maxlength="200" style="margin:0"><button class="btn" id="cs">Post</button></div>`;
+  $('#cs').onclick=async()=>{
+    const t=$('#ci').value.trim();if(!t)return;
+    if(!me)return authSheet();
+    const b=writeBatch(db);
+    b.set(doc(collection(db,'videos',id,'comments')),{uid:me.uid,username:me.username,body:t,createdAt:serverTimestamp()});
+    b.update(doc(db,'videos',id),{commentCount:increment(1)});
+    await b.commit();
+    const v=vids.find(x=>x.id===id);v.commentCount=(v.commentCount||0)+1;
+    sec.querySelector('[data-a=cm] b').textContent=v.commentCount;
+    comments(id,sec);
+  };
+}
+
+function authSheet(){
+  sheet(`<h3>Log in or sign up</h3><div class="msg" id="am"></div>
+  <input id="au" placeholder="Username (letters, numbers, _)" maxlength="20" autocapitalize="none" autocomplete="username"><input id="ap" type="password" placeholder="Password (6+ characters)" autocomplete="current-password">
+  <div class="row"><button class="btn" id="li" style="flex:1">Log in</button><button class="btn alt" id="su" style="flex:1">Sign up</button></div>`);
+  const m=t=>$('#am').textContent=t;
+  $('#li').onclick=async()=>{
+    const n=$('#au').value.trim();if(!nameOk(n))return m('Enter your username.');
+    try{await signInWithEmailAndPassword(auth,mail(n),$('#ap').value);$('#sheet').hidden=true}
+    catch(e){m(nice(e))}
+  };
+  $('#su').onclick=async()=>{
+    const username=$('#au').value.trim();if(!nameOk(username))return m('Username: 3-20 letters, numbers or _ only.');
+    busy=true;
+    try{
+      const c=await createUserWithEmailAndPassword(auth,mail(username),$('#ap').value);
+      await setDoc(doc(db,'users',c.user.uid),{username,isAdmin:false,createdAt:serverTimestamp()});
+      busy=false;$('#sheet').hidden=true;await refresh();
+    }catch(e){busy=false;m(nice(e))}
+  };
+}
+
+function uploadSheet(){
+  if(!me)return authSheet();
+  sheet(`<h3>Post a video</h3><div class="msg" id="um"></div>
+  <input id="uf" type="file" accept="video/*"><textarea id="uc" rows="2" maxlength="300" placeholder="Write a caption"></textarea>
+  <button class="btn" id="ub" style="width:100%">Post video</button>`);
+  $('#ub').onclick=()=>{
+    const f=$('#uf').files[0],m=t=>$('#um').textContent=t;
+    if(!f)return m('Choose a video file first.');
+    if(f.size>50*1024*1024)return m('Video is over 50 MB. Compress it first.');
+    $('#ub').disabled=true;
+    const path=`videos/${me.uid}/${Date.now()}.${(f.name.split('.').pop()||'mp4').toLowerCase()}`;
+    const task=uploadBytesResumable(ref(store,path),f,{contentType:f.type});
+    task.on('state_changed',s=>m(`Uploading… ${Math.round(s.bytesTransferred/s.totalBytes*100)}%`),
+      e=>{$('#ub').disabled=false;m(nice(e))},
+      async()=>{
+        try{
+          const url=await getDownloadURL(task.snapshot.ref);
+          await addDoc(collection(db,'videos'),{uid:me.uid,username:me.username,isAdmin:me.isAdmin,url,caption:$('#uc').value.trim(),likeCount:0,commentCount:0,createdAt:serverTimestamp()});
+          $('#sheet').hidden=true;go('home');
+        }catch(e){$('#ub').disabled=false;m(nice(e))}
+      });
+  };
+}
+
+async function profile(){
+  const p=$('#prof');
+  if(!me){p.innerHTML='<div class="empty" style="height:80%">Log in to see your profile.<br><br><button class="btn" id="pl">Log in</button></div>';$('#pl').onclick=authSheet;return}
+  p.innerHTML=`<div class="av" style="width:72px;height:72px;font-size:28px;margin:0 auto">${esc(me.username[0]).toUpperCase()}</div><h2>@${esc(me.username)}</h2><button class="btn alt" id="lo">Log out</button><div class="grid" id="pg"></div>`;
+  $('#lo').onclick=async()=>{await signOut(auth);go('home')};
+  const s=await getDocs(query(collection(db,'videos'),where('uid','==',me.uid)));
+  const mine=s.docs.map(d=>d.data()).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+  $('#pg').innerHTML=mine.map(v=>`<video src="${esc(v.url)}#t=0.1" preload="metadata" muted playsinline></video>`).join('');
+}
+
+function go(n){
+  document.querySelectorAll('nav [data-n]').forEach(b=>b.classList.toggle('on',b.dataset.n===n));
+  $('#prof').hidden=n!=='me';$('#feed').style.visibility=n==='me'?'hidden':'visible';
+  document.querySelector('.top').style.display=n==='me'?'none':'flex';
+  if(n==='me'){document.querySelectorAll('video').forEach(v=>v.pause());profile()}
+  else loadFeed();
+}
+document.querySelectorAll('nav [data-n]').forEach(b=>b.onclick=()=>b.dataset.n==='add'?uploadSheet():go(b.dataset.n));
+document.querySelectorAll('.top [data-t]').forEach(b=>b.onclick=()=>{
+  tab=b.dataset.t;document.querySelectorAll('.top [data-t]').forEach(x=>x.classList.toggle('on',x===b));loadFeed();
+});
+onAuthStateChanged(auth,async()=>{if(!busy)await refresh()});
+</script>
+</body></html>
