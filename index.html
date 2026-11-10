@@ -67,15 +67,43 @@ nav .plus{width:46px;height:32px;border-radius:10px;border:0;background:linear-g
 .mi{display:flex;gap:8px;padding:10px;border-top:1px solid #ffffff14;align-items:center;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
 .mi #ct{flex:1;min-width:0;background:#2c2227;border:1px solid #4a3a42;border-radius:20px;padding:10px 14px}
 .mi #cp{background:none;border:0;font-size:24px}
+.lt{position:absolute;inset:0;z-index:60;background:radial-gradient(circle at 50% 40%,#5a1230,#12060b 75%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;overflow:hidden;animation:fi .6s}
+.lt[hidden]{display:none}
+@keyframes fi{from{opacity:0}}
+.fh{position:absolute;bottom:-30px;color:#ff3b6b66;font-style:normal;font-size:22px;animation:fh 7s linear infinite}
+@keyframes fh{to{transform:translateY(-110vh) rotate(25deg)}}
+.env{position:relative;width:270px;height:180px;cursor:pointer;animation:bob 2.4s ease-in-out infinite alternate}
+@keyframes bob{to{transform:translateY(-8px)}}
+.lt.open .env{animation:none}
+.eb{position:absolute;inset:0;background:#d9b99a;border-radius:6px}
+.ef{position:absolute;inset:0;background:#f0dcc6;clip-path:polygon(0 0,50% 58%,100% 0,100% 100%,0 100%);border-radius:6px}
+.fl{position:absolute;left:0;right:0;top:0;height:105px;background:#e6cdb2;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .8s;z-index:3}
+.lt.open .fl{transform:rotateX(180deg);z-index:1}
+.sl{position:absolute;left:50%;top:96px;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:#c4183f;color:#ffd7e0;display:grid;place-items:center;font-size:22px;z-index:4;box-shadow:0 3px 8px #0008;transition:.5s}
+.lt.open .sl{transform:scale(0);opacity:0}
+.hint{color:#ffd7e0;font-family:"Segoe Script","Brush Script MT","Snell Roundhand",cursive;font-size:19px;min-height:26px}
+.lt.read .env,.lt.read .hint{display:none}
+.lp{position:absolute;inset:0;background:#fbf1e4;color:#4a2230;display:flex;flex-direction:column;justify-content:safe center;gap:22px;padding:70px 30px 40px;overflow-y:auto;animation:rise .9s ease-out;z-index:2}
+.lp[hidden]{display:none}
+@keyframes rise{from{transform:translateY(45%) scale(.55);opacity:0}}
+.pt{font-family:"Segoe Script","Brush Script MT","Snell Roundhand",cursive;font-size:22px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.sg{font-family:"Segoe Script","Brush Script MT","Snell Roundhand",cursive;text-align:right;font-size:18px;color:#c4183f}
+.lp .btn{align-self:center}
 @media(max-width:480px){.phone{width:100vw;height:100dvh;max-height:none;border:0;border-radius:0}.notch{display:none}.top{padding-top:calc(env(safe-area-inset-top,0px) + 16px)}nav{height:calc(58px + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px)}#feed,#prof{bottom:calc(58px + env(safe-area-inset-bottom,0px))}}
 </style></head>
 <body>
 <div class="phone"><div class="notch"></div>
 <div class="screen">
- <div class="top"><button data-t="fy" class="on">For You</button><button data-t="new">Latest</button></div>
+ <div class="top"><button data-t="fy" class="on">For You</button></div>
  <div id="feed"></div>
  <div id="prof" hidden></div>
  <nav><button data-n="home" class="on"><i>⌂</i>Home</button><button class="plus" data-n="add">+</button><button data-n="inbox"><i>✉</i>Inbox</button><button data-n="me"><i>☺</i>Profile</button></nav>
+ <div id="lt" class="lt" hidden>
+  <i class="fh" style="left:8%;animation-delay:0s">♥</i><i class="fh" style="left:28%;animation-delay:2s">♥</i><i class="fh" style="left:52%;animation-delay:4s">♥</i><i class="fh" style="left:74%;animation-delay:1s">♥</i><i class="fh" style="left:90%;animation-delay:3s">♥</i>
+  <div class="env" id="env"><div class="eb"></div><div class="ef"></div><div class="fl"></div><div class="sl">♥</div></div>
+  <p class="hint" id="hint">A letter for you… tap to open</p>
+  <div class="lp" id="lp" hidden><div class="pt" id="ptx"></div><div class="sg" id="psg"></div><button class="btn" id="pcl">Close ♥</button></div>
+ </div>
  <div id="inbox" hidden></div>
  <div id="chat" hidden></div>
  <div id="sheet" class="sheet" hidden><div class="panel" id="panel"></div></div>
@@ -84,7 +112,7 @@ nav .plus{width:46px;height:32px;border-radius:10px;border:0;background:linear-g
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import{getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import{getFirestore,collection,doc,getDoc,getDocs,setDoc,addDoc,query,orderBy,limit,where,increment,serverTimestamp,writeBatch,onSnapshot}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import{getFirestore,collection,doc,getDoc,getDocs,setDoc,addDoc,query,orderBy,limit,where,increment,serverTimestamp,writeBatch,onSnapshot,deleteDoc}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 /* ====== Firebase config (tiktok-for-her) ====== */
 const firebaseConfig={
@@ -137,7 +165,7 @@ function card(v){
   <div class="rail"><div class="av">${esc(u[0]).toUpperCase()}</div>
   <button class="${myLikes.has(v.id)?'liked':''}" data-a="like"><i>♥</i><b>${v.likeCount||0}</b></button>
   <button data-a="cm"><i>💬</i><b>${v.commentCount||0}</b></button>
-  <button data-a="sh"><i>➤</i><b>Share</b></button></div>
+  <button data-a="sh"><i>➤</i><b>Share</b></button>${me&&(me.uid===v.uid||me.isAdmin)?'<button data-a="del"><i>🗑</i><b>Delete</b></button>':''}</div>
   <div class="cap"><strong>@${esc(u)}${v.isAdmin?' <span class="ck">♥</span>':''}</strong><p>${esc(v.caption)}</p></div></section>`;
 }
 function renderFeed(){
@@ -152,6 +180,7 @@ $('#feed').addEventListener('click',async e=>{
   const id=sec.dataset.id,a=e.target.closest('[data-a]')?.dataset.a;
   if(a==='like')return like(id,sec);
   if(a==='cm')return comments(id,sec);
+  if(a==='del')return delVideo(id,sec);
   if(a==='sh')return shareSheet(vids.find(x=>x.id===id));
   const vd=sec.querySelector('video');
   if(muted){muted=false;document.querySelectorAll('video').forEach(x=>x.muted=false);return}
@@ -229,8 +258,9 @@ function uploadSheet(){
 async function profile(){
   const p=$('#prof');
   if(!me){p.innerHTML='<div class="empty" style="height:80%">Log in to see your profile.<br><br><button class="btn" id="pl">Log in</button></div>';$('#pl').onclick=authSheet;return}
-  p.innerHTML=`<div class="av" style="width:72px;height:72px;font-size:28px;margin:0 auto">${esc(me.username[0]).toUpperCase()}</div><h2>@${esc(me.username)}</h2><button class="btn alt" id="lo">Log out</button><div class="grid" id="pg"></div>`;
+  p.innerHTML=`<div class="av" style="width:72px;height:72px;font-size:28px;margin:0 auto">${esc(me.username[0]).toUpperCase()}</div><h2>@${esc(me.username)}</h2><button class="btn alt" id="lo">Log out</button>${me.isAdmin?' <button class="btn" id="ann">💌 Send love letter</button>':''}<div class="grid" id="pg"></div>`;
   $('#lo').onclick=async()=>{await signOut(auth);go('home')};
+  if(me.isAdmin)$('#ann').onclick=annSheet;
   const s=await getDocs(query(collection(db,'videos'),where('uid','==',me.uid)));
   const mine=s.docs.map(d=>d.data()).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
   $('#pg').innerHTML=mine.map(v=>`<video src="${esc(v.url)}#t=0.1" preload="metadata" muted playsinline></video>`).join('');
@@ -304,6 +334,45 @@ async function openChat(o){
   $('#cs2').onclick=send;$('#ct').onkeydown=e=>{if(e.key==='Enter')send()};
 }
 
+/* ===== Delete video + love letter announcements ===== */
+function delVideo(id,sec){
+  sheet('<h3>Delete this video?</h3><div class="row"><button class="btn alt" id="dn" style="flex:1">Cancel</button><button class="btn" id="dy" style="flex:1">Delete</button></div>');
+  $('#dn').onclick=()=>$('#sheet').hidden=true;
+  $('#dy').onclick=async()=>{
+    try{await deleteDoc(doc(db,'videos',id));$('#sheet').hidden=true;vids=vids.filter(v=>v.id!==id);sec.remove();if(!vids.length)renderFeed()}
+    catch(e){$('#dy').textContent=nice(e)}
+  };
+}
+function annSheet(){
+  sheet('<h3>💌 Send a love letter</h3><div class="msg" id="gm">It pops up full-screen for everyone who has the app open.</div><textarea id="gt" rows="6" maxlength="600" placeholder="Write your letter…"></textarea><button class="btn" id="gs" style="width:100%">Send now</button>');
+  $('#gs').onclick=async()=>{
+    const t=$('#gt').value.trim();if(!t)return;
+    $('#gs').disabled=true;
+    try{await addDoc(collection(db,'announcements'),{text:t,from:me.uid,fromName:me.username,createdAt:serverTimestamp()});$('#sheet').hidden=true}
+    catch(e){$('#gs').disabled=false;$('#gm').textContent=nice(e)}
+  };
+}
+function showLetter(x){
+  const lt=$('#lt');
+  $('#ptx').textContent=x.text;$('#psg').textContent=x.fromName?'— @'+x.fromName+' ♥':'';
+  lt.classList.remove('open','read');$('#lp').hidden=true;$('#hint').textContent='A letter for you… tap to open';lt.hidden=false;
+  $('#env').onclick=()=>{
+    if(lt.classList.contains('open'))return;
+    lt.classList.add('open');$('#hint').textContent='';
+    setTimeout(()=>{$('#lp').hidden=false;lt.classList.add('read')},1300);
+  };
+  $('#pcl').onclick=()=>{lt.hidden=true;try{localStorage.setItem('seenLetter',x.id)}catch(e){}};
+}
+function listenLetters(){
+  onSnapshot(query(collection(db,'announcements'),orderBy('createdAt','desc'),limit(1)),s=>{
+    const d=s.docs[0];if(!d)return;
+    const x={id:d.id,...d.data()};
+    if(!x.createdAt||Date.now()/1000-x.createdAt.seconds>7*86400)return;
+    let seen='';try{seen=localStorage.getItem('seenLetter')||''}catch(e){}
+    if(seen!==x.id)showLetter(x);
+  },()=>{});
+}
+
 function go(n){
   document.querySelectorAll('nav [data-n]').forEach(b=>b.classList.toggle('on',b.dataset.n===n));
   const off=n==='me'||n==='inbox';
@@ -319,5 +388,6 @@ document.querySelectorAll('.top [data-t]').forEach(b=>b.onclick=()=>{
   tab=b.dataset.t;document.querySelectorAll('.top [data-t]').forEach(x=>x.classList.toggle('on',x===b));loadFeed();
 });
 onAuthStateChanged(auth,async()=>{if(!busy)await refresh()});
+listenLetters();
 </script>
 </body></html>
