@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=VT323&display=swap" rel="stylesheet">
 <title>Our Reels</title>
 <meta name="theme-color" content="#000000">
 <style>
@@ -90,6 +91,40 @@ nav .plus{width:46px;height:32px;border-radius:10px;border:0;background:linear-g
 .sg{font-family:"Segoe Script","Brush Script MT","Snell Roundhand",cursive;text-align:right;font-size:18px;color:#c4183f}
 .lp .btn{align-self:center}
 nav .plus{visibility:hidden}nav .plus.ok{visibility:visible}
+/* ===== Minecraft theme ===== */
+:root{--bg:#1d1d1d;--rose:#5cb338;--mc:"Pixelify Sans","VT323","Courier New",monospace}
+body{font-family:var(--mc);background:conic-gradient(#3d3d3d 25%,#353535 0 50%,#3d3d3d 0 75%,#353535 0) 0 0/48px 48px}
+.phone{border:10px solid #3a2a1a;border-radius:8px;box-shadow:0 0 0 4px #000,0 30px 80px #000}
+.notch{border-radius:0;width:90px;height:22px}
+.top button{font-family:var(--mc);font-size:18px;text-shadow:2px 2px #000;border-bottom-width:3px}
+.top button.on{border-color:#5cb338}
+.rail .liked i{color:#ff2b2b}
+.rail b,.cap,.cap p{text-shadow:2px 2px #000}
+.av{border-radius:0;background:#8a5a2b;border:3px solid #000;box-shadow:inset -3px -3px #5b3a1a,inset 3px 3px #b07a43;text-shadow:2px 2px #000}
+.ck{color:#ff2b2b}
+nav{background:#2a2a2a;border-top:4px solid #000;box-shadow:inset 0 3px #5a5a5a}
+nav button{font-family:var(--mc);font-size:13px;text-shadow:2px 2px #000}
+nav .plus{width:44px;height:36px;border:3px solid #000;border-radius:0;background:linear-gradient(#5cb338 0 38%,#8a5a2b 38%);text-shadow:2px 2px #000;box-shadow:inset 3px 3px #ffffff40}
+.btn{background:#5a8f29;color:#fff;border:2px solid #000;border-radius:0;box-shadow:inset -3px -3px #3b6a17,inset 3px 3px #7fc24a;text-shadow:2px 2px #1f3a0c}
+.btn.alt{background:#7a7a7a;box-shadow:inset -3px -3px #4a4a4a,inset 3px 3px #b0b0b0;text-shadow:2px 2px #3f3f3f}
+.btn:active{box-shadow:inset 3px 3px #00000050}
+.panel{background:#c6c6c6;color:#3f3f3f;border:4px solid #000;border-bottom:0;border-radius:0;box-shadow:inset 4px 4px #fff,inset -4px -4px #6b6b6b}
+.panel input,.panel textarea{background:#000;color:#fff;border:2px solid #a0a0a0;border-radius:0}
+.c{border-bottom-color:#8b8b8b}.c b{color:#2d6a0c}
+.msg{color:#a31515}
+.mh{border-bottom:3px solid #000;background:#00000070}
+.ch p{color:#cfcfcf}
+#ml{gap:2px;padding:10px}
+.b,.b.me,.b.th{align-self:stretch;max-width:100%;background:#00000080;border-radius:0;padding:2px 6px;font-size:16px;text-shadow:2px 2px #3f3f3f;color:#fff}
+.b .who{color:#ffff55}.b.me .who{color:#55ffff}
+.b video,.b img{max-width:60%;border-radius:0;margin-top:4px}
+.mi{background:#00000090}
+.mi #ct{background:#000;border:2px solid #a0a0a0;border-radius:0;font-family:var(--mc)}
+.lp{background:#d8c28a;color:#2b1d0a;border:6px solid #5b3a1a}
+.pt,.sg,.hint{font-family:var(--mc)}
+.sg{color:#a31515}
+.tg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tb{height:56px;border:2px solid #000;color:#fff;text-shadow:2px 2px #000;font:inherit;box-shadow:inset 0 0 0 2px #ffffff40;cursor:pointer}
 @media(max-width:480px){.phone{width:100vw;height:100dvh;max-height:none;border:0;border-radius:0}.notch{display:none}.top{padding-top:calc(env(safe-area-inset-top,0px) + 16px)}nav{height:calc(58px + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px)}#feed,#prof{bottom:calc(58px + env(safe-area-inset-bottom,0px))}}
 </style></head>
 <body>
@@ -255,15 +290,16 @@ function uploadSheet(){
   if(!me)return authSheet();
   if(!me.isAdmin)return;
   sheet(`<h3>Post a video</h3><div class="msg" id="um"></div>
-  <input id="uf" type="file" accept="video/*"><input id="ul" type="url" placeholder="…or paste a video link (.mp4)" autocapitalize="none"><textarea id="uc" rows="2" maxlength="300" placeholder="Write a caption"></textarea>
+  <input id="uf" type="file" accept="video/*"><textarea id="uc" rows="2" maxlength="300" placeholder="Write a caption"></textarea>
   <button class="btn" id="ub" style="width:100%">Post video</button>`);
   $('#ub').onclick=async()=>{
-    const f=$('#uf').files[0],link=$('#ul').value.trim(),m=t=>$('#um').textContent=t;
-    if(!f&&!/^https:\/\/.+/i.test(link))return m('Choose a video, or paste a link starting with https://');
+    const f=$('#uf').files[0],m=t=>$('#um').textContent=t;
+    if(!f)return m('Choose a video file first.');
+    if(CLOUD==='YOUR_CLOUD_NAME')return m('Upload is not set up yet: paste your Cloudinary cloud name and preset into the file.');
     if(f&&f.size>90*1024*1024)return m('Video is over 90 MB. Compress it first.');
     $('#ub').disabled=true;
     try{
-      const url=f?await cld(f,p=>m(`Uploading… ${p}%`)):link;
+      const url=await cld(f,p=>m(`Uploading… ${p}%`));
       await addDoc(collection(db,'videos'),{uid:me.uid,username:me.username,isAdmin:me.isAdmin,url,caption:$('#uc').value.trim(),likeCount:0,commentCount:0,createdAt:serverTimestamp()});
       $('#sheet').hidden=true;go('home');
     }catch(e){$('#ub').disabled=false;m(e.message||nice(e))}
@@ -283,7 +319,7 @@ async function profile(){
 
 /* ===== Messages ===== */
 const cid=(a,b)=>[a,b].sort().join('_');
-let unsubI=null,unsubC=null;
+let unsubI=null,unsubC=null,chatWith=null;
 async function ensureChat(o){const id=cid(me.uid,o.uid);await setDoc(doc(db,'chats',id),{members:[me.uid,o.uid],names:{[me.uid]:me.username,[o.uid]:o.username}},{merge:true});return id}
 async function sendMsg(id,d){
   await addDoc(collection(db,'chats',id,'messages'),{from:me.uid,...d,createdAt:serverTimestamp()});
@@ -334,16 +370,20 @@ const bubble=m=>{
   if(m.type==='image')b=`<img src="${esc(m.url)}" loading="lazy">`;
   else if(m.type==='video')b=`<video src="${esc(m.url)}" controls playsinline preload="metadata"></video>${m.by?`<small>@${esc(m.by)}</small>`:''}${m.text?`<div>${esc(m.text)}</div>`:''}`;
   else b=esc(m.text);
-  return `<div class="b ${m.from===me.uid?'me':'th'}">${b}</div>`;
+  const nm=m.from===me.uid?me.username:(chatWith?.username||'?');
+  return `<div class="b ${m.from===me.uid?'me':'th'}"><span class="who">&lt;${esc(nm)}&gt;</span> ${b}</div>`;
 };
 async function openChat(o){
   $('#sheet').hidden=true;
   const id=await ensureChat(o),c=$('#chat');c.hidden=false;
-  c.innerHTML=`<div class="mh"><button class="bk" id="cb">‹</button><div class="av" style="width:34px;height:34px">${esc(o.username[0]).toUpperCase()}</div><b>@${esc(o.username)}</b></div><div id="ml"></div><div class="mi"><input id="ct" placeholder="Message" maxlength="500"><button class="btn" id="cs2">Send</button></div>`;
-  unsubC&&unsubC();
-  unsubC=onSnapshot(query(collection(db,'chats',id,'messages'),orderBy('createdAt'),limit(200)),s=>{
+  c.innerHTML=`<div class="mh"><button class="bk" id="cb">‹</button><div class="av" style="width:34px;height:34px">${esc(o.username[0]).toUpperCase()}</div><b>@${esc(o.username)}</b><button class="btn" id="th" style="margin-left:auto;padding:6px 10px">🎨 Theme</button></div><div id="ml"></div><div class="mi"><input id="ct" placeholder="Message" maxlength="500"><button class="btn" id="cs2">Send</button></div>`;
+  unsubC&&unsubC();chatWith=o;
+  const u1=onSnapshot(query(collection(db,'chats',id,'messages'),orderBy('createdAt'),limit(200)),s=>{
     $('#ml').innerHTML=s.docs.map(d=>bubble(d.data())).join('');$('#ml').scrollTop=1e9;
   });
+  const u2=onSnapshot(doc(db,'chats',id),s=>applyTheme(s.data()?.theme));
+  unsubC=()=>{u1();u2()};
+  $('#th').onclick=()=>themeSheet(id);
   $('#cb').onclick=()=>{unsubC&&unsubC();unsubC=null;c.hidden=true;c.innerHTML=''};
   const send=async()=>{const t=$('#ct').value.trim();if(!t)return;$('#ct').value='';await sendMsg(id,{type:'text',text:t})};
   $('#cs2').onclick=send;$('#ct').onkeydown=e=>{if(e.key==='Enter')send()};
@@ -388,6 +428,42 @@ function listenLetters(){
     if(!x.createdAt)return;
     last=d.id;showLetter(x);
   },()=>{});
+}
+
+/* ===== Chat themes ===== */
+const THEMES={
+  grass:'linear-gradient(#78a7ff 0 50%,#5cb338 50% 58%,#8a5a2b 58%)',
+  stone:'conic-gradient(#4a4a4a 25%,#3e3e3e 0 50%,#4a4a4a 0 75%,#3e3e3e 0) 0 0/40px 40px',
+  nether:'conic-gradient(#5a1010 25%,#701818 0 50%,#5a1010 0 75%,#701818 0) 0 0/44px 44px',
+  end:'conic-gradient(#171028 25%,#241a40 0 50%,#171028 0 75%,#241a40 0) 0 0/44px 44px',
+  ocean:'linear-gradient(#1c5fa8,#0b2a52)'
+};
+const THEME_NAMES={grass:'Overworld',stone:'Cave',nether:'Nether',end:'The End',ocean:'Ocean'};
+function applyTheme(t){
+  const c=$('#chat');if(!c)return;
+  c.style.background=!t?'':t.startsWith('data:')?`linear-gradient(#0005,#0005),url("${t}") center/cover`:(THEMES[t]||'');
+}
+function themeSheet(id){
+  sheet('<h3>Chat theme</h3><div class="tg">'+Object.keys(THEME_NAMES).map(k=>`<button class="tb" data-k="${k}" style="background:${THEMES[k]}">${THEME_NAMES[k]}</button>`).join('')+'</div><button class="btn" id="tp" style="width:100%;margin-top:10px">📷 Use my photo</button><button class="btn alt" id="tr" style="width:100%;margin-top:8px">Reset</button><input type="file" id="tf" accept="image/*" hidden><div class="msg" id="tm" style="margin-top:8px"></div>');
+  const save=t=>setDoc(doc(db,'chats',id),{theme:t},{merge:true});
+  document.querySelectorAll('.tb').forEach(b=>b.onclick=async()=>{await save(b.dataset.k);$('#sheet').hidden=true});
+  $('#tr').onclick=async()=>{await save('');$('#sheet').hidden=true};
+  $('#tp').onclick=()=>$('#tf').click();
+  $('#tf').onchange=e=>{
+    const f=e.target.files[0];if(!f)return;
+    const img=new Image(),u=URL.createObjectURL(f);
+    img.onload=async()=>{
+      let w=Math.min(800,img.width),q=.6,url='';
+      for(let i=0;i<4;i++){
+        const cv=document.createElement('canvas');cv.width=w;cv.height=Math.round(img.height*w/img.width);
+        cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+        url=cv.toDataURL('image/jpeg',q);if(url.length<500000)break;w=Math.round(w*.75);q-=.1;
+      }
+      URL.revokeObjectURL(u);
+      try{await save(url);$('#sheet').hidden=true}catch(x){$('#tm').textContent=nice(x)}
+    };
+    img.src=u;
+  };
 }
 
 function go(n){
