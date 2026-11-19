@@ -2,6 +2,13 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#000000">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Reels">
 <title>Our Reels</title>
 <meta name="theme-color" content="#000000">
 <style>
@@ -125,6 +132,37 @@ nav .plus{width:44px;height:36px;border:3px solid #000;border-radius:0;backgroun
 .sg{color:#a31515}
 .tg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .tb{height:56px;border:2px solid #000;color:#fff;text-shadow:2px 2px #000;font:inherit;box-shadow:inset 0 0 0 2px #ffffff40;cursor:pointer}
+/* ===== Minecraft extras: hotbar, loading screen, like burst ===== */
+nav{background:#000000a0;border-top:0;box-shadow:none;gap:4px;padding:0 8px 4px}
+nav button{width:62px;height:48px;background:#8b8b8b66;border:3px solid #373737;box-shadow:inset 3px 3px #ffffff30,inset -3px -3px #00000040;justify-content:center}
+nav button.on{border-color:#fff;box-shadow:0 0 0 3px #000,inset 3px 3px #ffffff30}
+nav .plus{width:62px;height:48px}
+.rail button{position:relative}
+.rail i.pop{animation:pop .35s}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.5) rotate(-8deg)}100%{transform:scale(1)}}
+.ptc{position:absolute;left:50%;top:14px;width:6px;height:6px;pointer-events:none;animation:pf .6s ease-out forwards}
+@keyframes pf{to{transform:translate(var(--dx),var(--dy));opacity:0}}
+.ld{position:absolute;inset:0;z-index:80;background:conic-gradient(#6b4423 25%,#5e3b1d 0 50%,#6b4423 0 75%,#5e3b1d 0) 0 0/32px 32px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;transition:opacity .5s}
+.ld.gone{opacity:0;pointer-events:none}
+.ldc{perspective:420px;height:90px;display:grid;place-items:center}
+.cb{width:64px;height:64px;position:relative;transform-style:preserve-3d;animation:sp 3s linear infinite}
+@keyframes sp{from{transform:rotateX(-25deg) rotateY(0)}to{transform:rotateX(-25deg) rotateY(360deg)}}
+.cb i{position:absolute;inset:0;border:2px solid #000}
+.cb .sd{background:linear-gradient(#5cb338 0 28%,#8a5a2b 28%)}
+.cb .tp{background:#5cb338;transform:rotateX(90deg) translateZ(32px)}
+.cb .bt{background:#8a5a2b;transform:rotateX(-90deg) translateZ(32px)}
+.cb .f1{transform:translateZ(32px)}.cb .f2{transform:rotateY(90deg) translateZ(32px)}.cb .f3{transform:rotateY(180deg) translateZ(32px)}.cb .f4{transform:rotateY(-90deg) translateZ(32px)}
+.ldt{color:#fff;font-size:20px;text-shadow:2px 2px #3f3f3f}
+.xp{width:200px;height:12px;background:#000;border:2px solid #373737}
+.xp b{display:block;height:100%;background:#7fe03a;animation:xpf 1.3s ease-out forwards}
+@keyframes xpf{from{width:0}to{width:100%}}
+.jbn{background:#000a;color:#fff;font-size:14px;padding:2px 10px;text-shadow:2px 2px #3f3f3f;text-align:center}
+.jbn:empty{display:none}
+.sr{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #8b8b8b}
+.sr span{flex:1;overflow-wrap:anywhere}
+.panel input[type=range]{padding:0;background:transparent;border:0;accent-color:#5cb338}
+.off{position:absolute;left:0;right:0;bottom:58px;z-index:25;background:#a31515ee;color:#fff;text-align:center;font-size:13px;padding:4px 8px;text-shadow:2px 2px #000}
+.off[hidden]{display:none}
 @media(max-width:480px){.phone{width:100vw;height:100dvh;max-height:none;border:0;border-radius:0}.notch{display:none}.top{padding-top:calc(env(safe-area-inset-top,0px) + 16px)}nav{height:calc(58px + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px)}#feed,#prof{bottom:calc(58px + env(safe-area-inset-bottom,0px))}}
 </style></head>
 <body>
@@ -134,6 +172,8 @@ nav .plus{width:44px;height:36px;border:3px solid #000;border-radius:0;backgroun
  <div id="feed"></div>
  <div id="prof" hidden></div>
  <nav><button data-n="home" class="on"><i>⌂</i>Home</button><button class="plus" data-n="add">+</button><button data-n="inbox"><i>✉</i>Inbox</button><button data-n="me"><i>☺</i>Profile</button></nav>
+ <div id="off" class="off" hidden>You are offline. Videos and messages need internet.</div>
+ <div id="ld" class="ld"><div class="ldc"><div class="cb"><i class="sd f1"></i><i class="sd f2"></i><i class="sd f3"></i><i class="sd f4"></i><i class="tp"></i><i class="bt"></i></div></div><div class="ldt">Loading world…</div><div class="xp"><b></b></div></div>
  <div id="lt" class="lt" hidden>
   <i class="fh" style="left:8%;animation-delay:0s">♥</i><i class="fh" style="left:28%;animation-delay:2s">♥</i><i class="fh" style="left:52%;animation-delay:4s">♥</i><i class="fh" style="left:74%;animation-delay:1s">♥</i><i class="fh" style="left:90%;animation-delay:3s">♥</i>
   <div class="env" id="env"><div class="eb"></div><div class="ef"></div><div class="fl"></div><div class="sl">♥</div></div>
@@ -201,7 +241,7 @@ async function loadFeed(){
   try{
     const s=await getDocs(query(collection(db,'videos'),orderBy('createdAt','desc'),limit(60)));
     vids=s.docs.map(d=>({id:d.id,...d.data()}));
-  }catch(e){$('#feed').innerHTML=`<div class="empty">Could not load videos.<br>${esc(nice(e))}</div>`;return}
+  }catch(e){$('#feed').innerHTML=`<div class="empty">Could not load videos.<br>${esc(nice(e))}</div>`;hideLoad();return}
   if(tab==='fy')vids=[...vids.filter(v=>v.isAdmin),...vids.filter(v=>!v.isAdmin)];
   renderFeed();
 }
@@ -219,7 +259,7 @@ function renderFeed(){
   const f=$('#feed');
   f.innerHTML=vids.length?vids.map(card).join(''):'<div class="empty">No videos yet.<br>Tap + to post the first one.</div>';
   f.querySelectorAll('.v').forEach(s=>io.observe(s));
-  f.scrollTop=0;
+  f.scrollTop=0;hideLoad();
 }
 
 $('#feed').addEventListener('click',async e=>{
@@ -239,7 +279,7 @@ async function like(id,sec){
   const v=vids.find(x=>x.id===id),has=myLikes.has(id),lr=doc(db,'users',me.uid,'likes',id),vr=doc(db,'videos',id),b=writeBatch(db);
   if(has){b.delete(lr);b.update(vr,{likeCount:increment(-1)});myLikes.delete(id);v.likeCount=Math.max(0,(v.likeCount||0)-1)}
   else{b.set(lr,{at:serverTimestamp()});b.update(vr,{likeCount:increment(1)});myLikes.add(id);v.likeCount=(v.likeCount||0)+1}
-  const btn=sec.querySelector('[data-a=like]');btn.classList.toggle('liked',!has);btn.querySelector('b').textContent=v.likeCount;
+  const btn=sec.querySelector('[data-a=like]');btn.classList.toggle('liked',!has);btn.querySelector('b').textContent=v.likeCount;if(!has)burst(btn);
   try{await b.commit()}catch(e){console.error(e)}
 }
 
@@ -308,10 +348,11 @@ function uploadSheet(){
 
 async function profile(){
   const p=$('#prof');
-  if(!me){p.innerHTML='<div class="empty" style="height:80%">Log in to see your profile.<br><br><button class="btn" id="pl">Log in</button></div>';$('#pl').onclick=authSheet;return}
-  p.innerHTML=`<div class="av" style="width:72px;height:72px;font-size:28px;margin:0 auto">${esc(me.username[0]).toUpperCase()}</div><h2>@${esc(me.username)}</h2><button class="btn alt" id="lo">Log out</button>${me.isAdmin?' <button class="btn" id="ann">💌 Send love letter</button>':''}<div class="grid" id="pg"></div>`;
+  if(!me){p.innerHTML='<div class="empty" style="height:80%">Log in to see your profile.<br><br><button class="btn" id="pl">Log in</button>'+(inApp?'':'<br><br><button class="btn alt" id="inst">📲 Install app</button>')+'</div>';$('#pl').onclick=authSheet;if($('#inst'))$('#inst').onclick=installSheet;return}
+  p.innerHTML=`<div class="av" style="width:72px;height:72px;font-size:28px;margin:0 auto">${esc(me.username[0]).toUpperCase()}</div><h2>@${esc(me.username)}</h2><button class="btn alt" id="lo">Log out</button>${inApp?'':' <button class="btn alt" id="inst">📲 Install</button>'}${me.isAdmin?' <button class="btn" id="ann">💌 Send love letter</button>':''}<div class="grid" id="pg"></div>`;
   $('#lo').onclick=async()=>{await signOut(auth);go('home')};
   if(me.isAdmin)$('#ann').onclick=annSheet;
+  if($('#inst'))$('#inst').onclick=installSheet;
   const s=await getDocs(query(collection(db,'videos'),where('uid','==',me.uid)));
   const mine=s.docs.map(d=>d.data()).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
   $('#pg').innerHTML=mine.map(v=>`<video src="${esc(v.url)}#t=0.1" preload="metadata" muted playsinline></video>`).join('');
@@ -376,14 +417,30 @@ const bubble=m=>{
 async function openChat(o){
   $('#sheet').hidden=true;
   const id=await ensureChat(o),c=$('#chat');c.hidden=false;
-  c.innerHTML=`<div class="mh"><button class="bk" id="cb">‹</button><div class="av" style="width:34px;height:34px">${esc(o.username[0]).toUpperCase()}</div><b>@${esc(o.username)}</b><button class="btn" id="th" style="margin-left:auto;padding:6px 10px">🎨 Theme</button></div><div id="ml"></div><div class="mi"><input id="ct" placeholder="Message" maxlength="500"><button class="btn" id="cs2">Send</button></div>`;
+  c.innerHTML=`<div class="mh"><button class="bk" id="cb">‹</button><div class="av" style="width:34px;height:34px">${esc(o.username[0]).toUpperCase()}</div><b>@${esc(o.username)}</b><button class="btn" id="th" style="margin-left:auto;padding:6px 10px">🎨 Theme</button>${me.isAdmin?'<button class="btn alt" id="jbb" style="padding:6px 10px">🎵</button>':''}</div><div id="jbn" class="jbn"></div><div id="ml"></div><div class="mi"><input id="ct" placeholder="Message" maxlength="500"><button class="btn" id="cs2">Send</button></div>`;
   unsubC&&unsubC();chatWith=o;
   const u1=onSnapshot(query(collection(db,'chats',id,'messages'),orderBy('createdAt'),limit(200)),s=>{
     $('#ml').innerHTML=s.docs.map(d=>bubble(d.data())).join('');$('#ml').scrollTop=1e9;
   });
   const u2=onSnapshot(doc(db,'chats',id),s=>applyTheme(s.data()?.theme));
-  unsubC=()=>{u1();u2()};
+  jbChat=id;jbSt=null;jbCur=null;jbList=[];
+  const u3=onSnapshot(query(collection(db,'jukebox'),orderBy('createdAt')),s=>{
+    jbList=s.docs.map(d=>({id:d.id,...d.data()}));
+    if(me.isAdmin&&jbCur&&!jbTrack(jbCur)){jb.pause();jbCur=null}
+    if(!me.isAdmin)jbApply();
+    jbLabel();
+  },()=>{});
+  const u4=onSnapshot(doc(db,'chats',id,'jukebox','state'),s=>{
+    if(s.metadata.hasPendingWrites)return;
+    jbSt=s.exists()?s.data():null;
+    if(jbSt?.vol!=null)jb.volume=jbSt.vol;
+    if(me.isAdmin){jbCur=jbCur||jbSt?.track||null;jbLabel()}else jbApply();
+  },()=>{});
+  jbBeat=setInterval(()=>{if(me.isAdmin&&jbCur&&!jb.paused)jbWrite(true)},15000);
+  jbWatch=setInterval(()=>{if(!me.isAdmin)jbApply()},5000);
+  unsubC=()=>{u1();u2();u3();u4();jbStop()};
   $('#th').onclick=()=>themeSheet(id);
+  if(me.isAdmin)$('#jbb').onclick=jukeSheet;
   $('#cb').onclick=()=>{unsubC&&unsubC();unsubC=null;c.hidden=true;c.innerHTML=''};
   const send=async()=>{const t=$('#ct').value.trim();if(!t)return;$('#ct').value='';await sendMsg(id,{type:'text',text:t})};
   $('#cs2').onclick=send;$('#ct').onkeydown=e=>{if(e.key==='Enter')send()};
@@ -466,6 +523,113 @@ function themeSheet(id){
   };
 }
 
+/* ===== Loading screen + like burst ===== */
+const t0=Date.now();
+function hideLoad(){
+  const l=$('#ld');if(!l||l.dataset.h)return;l.dataset.h=1;
+  setTimeout(()=>{l.classList.add('gone');setTimeout(()=>l.remove(),600)},Math.max(0,1300-(Date.now()-t0)));
+}
+function burst(btn){
+  const i=btn.querySelector('i');i.classList.remove('pop');void i.offsetWidth;i.classList.add('pop');
+  for(let k=0;k<10;k++){
+    const p=document.createElement('span'),a=Math.random()*6.283,d=22+Math.random()*26;
+    p.className='ptc';p.style.setProperty('--dx',Math.cos(a)*d+'px');p.style.setProperty('--dy',Math.sin(a)*d+'px');
+    p.style.background=['#ff2b2b','#b01212','#ff7a7a'][k%3];
+    btn.appendChild(p);setTimeout(()=>p.remove(),650);
+  }
+}
+
+/* ===== Jukebox: synced per chat, only the admin controls it ===== */
+let jbList=[],jbSt=null,jbChat=null,jbCur=null,jbBeat=null,jbWatch=null,jbBlocked=false;
+const jb=new Audio();
+const jbTrack=id=>jbList.find(x=>x.id===id);
+const jbRef=()=>doc(db,'chats',jbChat,'jukebox','state');
+jb.onerror=()=>{if(jb._u)jbLabel('Could not play this disc')};
+jb.onplay=jb.onpause=()=>jbLabel();
+jb.onended=()=>{if(jb._u&&me?.isAdmin)aNext()};
+document.addEventListener('pointerdown',()=>{
+  if(jb._u!==undefined)return;jb._u='';
+  jb.src='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+  jb.play().catch(()=>{});
+},{once:true});
+document.addEventListener('pointerdown',()=>{if(jbBlocked){jbBlocked=false;if(!me?.isAdmin)jbApply()}});
+function jbLabel(m){
+  const e=$('#jbn');if(!e)return;
+  const t=jbTrack(me?.isAdmin?jbCur:jbSt?.track);
+  e.textContent=m||(!t?'':(jb.paused?'♪ Jukebox paused':'♪ Now playing: '+t.title));
+}
+/* listener side (everyone except the admin): follow the admin's state */
+function jbApply(){
+  const st=jbSt;
+  if(st&&st.vol!=null)jb.volume=st.vol;
+  const t=st&&jbTrack(st.track);
+  if(!t||!st.ts){jb.pause();jbLabel();return}
+  const age=Date.now()-st.ts.toMillis(),alive=st.playing&&age<45000;
+  if(!alive){jb.pause();jbLabel();return}
+  if(jb._u!==t.url){jb._u=t.url;jb.src=t.url;jb.addEventListener('loadedmetadata',jbApply,{once:true})}
+  const want=(st.pos||0)+age/1000;
+  if(jb.readyState>0&&Math.abs(jb.currentTime-want)>1.5){try{jb.currentTime=want}catch(e){}}
+  if(jb.paused)jb.play().catch(()=>{jbBlocked=true;jbLabel('Tap the screen to start the music')});
+  jbLabel();
+}
+/* admin side */
+function jbWrite(playing,pos){
+  if(!jbChat||!jbCur)return;
+  return setDoc(jbRef(),{track:jbCur,playing,pos:pos==null?(jb.currentTime||0):pos,by:me.uid,ts:serverTimestamp()},{merge:true}).catch(()=>{});
+}
+function aPlay(id,restart){
+  const t=jbTrack(id);if(!t)return;
+  const fresh=jb._u!==t.url||restart;
+  if(jb._u!==t.url){jb._u=t.url;jb.src=t.url}else if(restart)jb.currentTime=0;
+  jbCur=id;
+  jb.play().catch(()=>jbLabel('Tap Play to start'));
+  jb.addEventListener('playing',()=>{if(me.isAdmin)jbWrite(true)},{once:true});
+  jbWrite(true,fresh?0:null);
+}
+function aPause(){jb.pause();jbWrite(false)}
+function aNext(){
+  if(!jbList.length)return;
+  const i=jbList.findIndex(x=>x.id===jbCur);
+  aPlay(jbList[(i+1)%jbList.length].id,true);
+}
+function jbStop(){
+  clearInterval(jbBeat);clearInterval(jbWatch);
+  if(me?.isAdmin&&jbChat&&jbCur&&!jb.paused)setDoc(jbRef(),{track:jbCur,playing:false,pos:jb.currentTime||0,by:me.uid,ts:serverTimestamp()},{merge:true}).catch(()=>{});
+  jb.pause();jbList=[];jbSt=null;jbCur=null;jbChat=null;
+}
+function jukeSheet(){
+  sheet(`<h3>🎵 Jukebox</h3><div id="jl"></div><div class="row" style="margin:10px 0"><button class="btn alt" id="jp" style="flex:1">⏯ Play / Pause</button><button class="btn alt" id="jn" style="flex:1">⏭ Next</button></div><div style="margin-bottom:6px">Volume (everyone hears it)</div><input id="jv" type="range" min="0" max="100" value="${Math.round(jb.volume*100)}"><div class="msg" id="jm"></div><input id="jt" placeholder="Song name" maxlength="60"><input id="jf" type="file" accept="audio/*"><input id="ju" type="url" placeholder="…or paste a direct audio link (.mp3)" autocapitalize="none"><button class="btn" id="ja" style="width:100%">Add disc</button>`);
+  $('#jl').innerHTML=jbList.length?jbList.map(t=>`<div class="sr"><span>${t.id===jbCur?'▶ ':''}${esc(t.title)}</span><button class="btn alt" data-p="${esc(t.id)}" style="padding:2px 8px">▶</button><button class="btn alt" data-d="${esc(t.id)}" style="padding:2px 8px">✕</button></div>`).join(''):'<div class="c">No discs yet. Add your first song below.</div>';
+  $('#jl').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{aPlay(b.dataset.p,true);jukeSheet()});
+  $('#jl').querySelectorAll('[data-d]').forEach(b=>b.onclick=async()=>{await deleteDoc(doc(db,'jukebox',b.dataset.d));jukeSheet()});
+  $('#jp').onclick=()=>{if(jb.paused){if(jbCur)aPlay(jbCur);else if(jbList.length)aPlay(jbList[0].id)}else aPause()};
+  $('#jn').onclick=aNext;
+  $('#jv').onchange=e=>{const v=e.target.value/100;jb.volume=v;setDoc(jbRef(),{vol:v,by:me.uid},{merge:true}).catch(()=>{})};
+  $('#ja').onclick=async()=>{
+    const f=$('#jf').files[0],u=$('#ju').value.trim(),m=t=>$('#jm').textContent=t;
+    if(!f&&!/^https:\/\/.+/i.test(u))return m('Choose an audio file or paste an https link.');
+    if(f&&CLOUD==='YOUR_CLOUD_NAME')return m('Upload is not set up: paste your Cloudinary details into the file.');
+    $('#ja').disabled=true;
+    try{
+      const url=f?await cld(f,p=>m(`Uploading… ${p}%`)):u;
+      const title=$('#jt').value.trim()||(f?f.name.replace(/\.[^.]+$/,''):'Untitled disc');
+      await addDoc(collection(db,'jukebox'),{title,url,by:me.uid,createdAt:serverTimestamp()});
+      jukeSheet();
+    }catch(e){$('#ja').disabled=false;m(e.message||nice(e))}
+  };
+}
+
+/* ===== Install on phone + offline banner ===== */
+const inApp=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+let dip=null;
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();dip=e});
+function installSheet(){
+  if(dip){dip.prompt();dip=null;return}
+  sheet('<h3>📲 Install on your phone</h3><div class="c"><b>iPhone:</b> open this page in Safari, tap the Share button, then <b>Add to Home Screen</b>.</div><div class="c"><b>Android:</b> open this page in Chrome, tap the ⋮ menu, then <b>Install app</b> (or <b>Add to Home screen</b>).</div>');
+}
+const offSync=()=>{$('#off').hidden=navigator.onLine};
+addEventListener('online',offSync);addEventListener('offline',offSync);offSync();
+
 function go(n){
   document.querySelectorAll('nav [data-n]').forEach(b=>b.classList.toggle('on',b.dataset.n===n));
   const off=n==='me'||n==='inbox';
@@ -482,5 +646,7 @@ document.querySelectorAll('.top [data-t]').forEach(b=>b.onclick=()=>{
 });
 onAuthStateChanged(auth,async()=>{if(!busy)await refresh()});
 listenLetters();
+setTimeout(hideLoad,8000);
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body></html>
